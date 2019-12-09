@@ -22,8 +22,8 @@ import game_manager as gm
 """
 
 # flask app config and instance creation
-app = Flask("Chess AI", template_folder="C://Users//dylan//OneDrive//Documents//CSC//Pycharm//chess_bot//templates",
-            static_folder="C://Users//dylan//OneDrive//Documents//CSC//Pycharm//chess_bot//static")
+app = Flask("Chess AI", template_folder="templates",
+            static_folder="static")
 app.config['SECRET_KEY'] = secrets.token_urlsafe(32)
 
 # socketIO config
