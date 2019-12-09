@@ -186,6 +186,18 @@
             else if (data.state === "insufficient_material") {
                 reason = "insufficient material"
             }
+            else if (data.state === "threefold") {
+                reason = "threefold repetition"
+            }
+            else if (data.state === "fivefold") {
+                reason = "fivefold repetition"
+            }
+            else if (data.state === "fifty_moves") {
+                reason = "the fifty move rule"
+            }
+            else if (data.state === "seventyfive_moves") {
+                reason = "the seventyfive move rule"
+            }
 
             addOverlay("Draw", "The game has been drawn because of " + reason + ".");
         }
@@ -210,7 +222,9 @@
         console.log(data);
 
         game.load(data.fen);
-        updateBoard();
+        setTimeout(function(){
+            updateBoard();
+        }, 100);
 
         check_state(data);
     });
@@ -220,11 +234,11 @@
         console.log(data);
 
         game.load(data.fen);
-        board.move(data.move);
+        //board.move(data.move);
 
         setTimeout(function(){
             updateBoard();
-        }, 50);
+        }, 100);
 
         check_state(data);
     });
