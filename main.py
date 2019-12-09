@@ -129,6 +129,16 @@ def verify_move(data):
     return
 
 
+@socket_io.on('get_fen')
+def get_fen(data):
+    response = {
+        "fen": manager.get_fen(data["session_url"])
+    }
+
+    emit('give_fen', response)
+    return
+
+
 @socket_io.on('ai_move')
 def ai_move(data):
     # make the ai move

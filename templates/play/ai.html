@@ -230,17 +230,18 @@
     });
 
     //updates the board when the opponent makes a move using a move
-    socket.on('update_move', function(data){
+    socket.on('give_fen', function(data){
         console.log(data);
 
         game.load(data.fen);
         //board.move(data.move);
 
         setTimeout(function(){
-            updateBoard();
+            if (game.fen() !== data.fen) {
+                console.log("Fen's did not match, updating board...");
+                updateBoard();
+            }
         }, 100);
-
-        check_state(data);
     });
 
     //onload setup
@@ -264,10 +265,14 @@
 
         if(game_info.ai.color === game.turn()) {
             setTimeout(function(){
-
-            socket.emit("ai_move", data);
-        }, 50);
+                socket.emit("ai_move", data);
+            }, 50);
         }
+
+        setInterval(function() {
+            console.log("Requesting fen from server...");
+            socket.emit('get_fen', data)
+        }, 5000)
     });
 
     //handle screen size changes
