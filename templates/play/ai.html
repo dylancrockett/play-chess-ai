@@ -232,16 +232,13 @@
     //updates the board when the opponent makes a move using a move
     socket.on('give_fen', function(data){
         console.log(data);
-
-        game.load(data.fen);
-        //board.move(data.move);
-
-        setTimeout(function(){
-            if (game.fen() !== data.fen) {
+        if (game.fen() !== data.fen) {
+            game.load(data.fen);
+            setTimeout(function () {
                 console.log("Fen's did not match, updating board...");
                 updateBoard();
-            }
-        }, 100);
+            }, 100);
+        }
     });
 
     //onload setup
