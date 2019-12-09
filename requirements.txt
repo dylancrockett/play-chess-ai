@@ -1,0 +1,4 @@
+flask
+flask-socketio==4.2.1
+discord
+python-chess

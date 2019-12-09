@@ -1,0 +1,200 @@
+body {
+    background-color: rgb(50, 54, 57);
+}
+
+h1 {
+    margin: auto;
+    width: 50vw;
+    height: auto;
+    font-size: 6vmin;
+    z-index: auto;
+    color: rgb(255, 255, 255);
+    text-align: center;
+}
+
+p {
+    margin: 0 30vw 2vh 30vw;
+    width: 40vw;
+    font-size: 2vmin;
+    z-index: auto;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+}
+
+hr {
+    color: rgb(255, 255, 255);
+    width: 50vw;
+    size: 1vh;
+}
+
+input {
+    margin: 1vh 40vw 1vh 40vw;
+    width: 20vw;
+    height: 5vh;
+    border: 0;
+    border-radius:  0.5vmin;
+    font-size: 2vmin;
+    z-index: auto;
+    background-color: #fff;
+    color: #18191c;
+    align-self: center;
+    text-align: center;
+}
+
+.chess-page-grid {
+    display: grid;
+    grid-template-areas:
+        ".  opponent .     .     ."
+        "ad board    board board history"
+        "ad board    board board history"
+        "ad board    board board history"
+        ".  player   .     .     .";
+    grid-gap: 1vh;
+    grid-template-columns: 15vmin 25vmin 25vmin 25vmin 15vmin;
+    grid-template-rows: 5vmin 25vmin 25vmin 25vmin 5vmin;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+    margin: auto;
+}
+
+.chess-page-grid .opponent {
+    display: flex;
+    grid-area: opponent;
+    align-items: flex-start;
+    align-content: flex-start;
+}
+
+.chess-page-grid .player {
+    display: flex;
+    grid-area: player;
+    align-items: flex-start;
+    align-content: flex-start;
+}
+
+.avatar {
+    position: relative;
+    height: 100%;
+    width: 20%;
+    top: 0;
+    left: 0;
+}
+
+.username {
+    position: relative;
+    text-align: justify;
+    color: rgb(255, 255, 255);
+    /* width: 0; */
+    left: 1vmin;
+    font-size: 2.5vmin;
+}
+
+.rating {
+    position: relative;
+    text-align: justify;
+    color: rgb(190, 190, 190);
+     /* width: 0; */
+    left: 1vmin;
+    font-size: 2.5vmin;
+}
+
+.opponent .username {
+    height: 45%;
+    top: 0;
+}
+
+.opponent .rating {
+    height: 45%;
+    bottom: 0;
+}
+
+.player .username {
+    height: 45%;
+    bottom: 0;
+}
+
+.player .rating {
+    height: 45%;
+    top: 0;
+}
+
+.chess-page-grid .board {
+    grid-area: board;
+    align-content: center;
+}
+
+.overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    z-index: 100;
+}
+
+.game_overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    z-index: 100;
+}
+
+.announcement_overlay {
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    z-index: 101;
+    display: block;
+    width: 25%;
+    height: 20%;
+    border-radius: 2.5vmin;
+    background-color: rgb(50, 54, 57);
+}
+
+.game_divider {
+    color: rgb(255, 255, 255);
+    width: 80%;
+    size: 0.5vh;
+}
+
+.game_status {
+    margin: 5% 5% 0;
+    width: 90%;
+    height: 20%;
+    font-size: 4vmin;
+    z-index: auto;
+    color: rgb(255, 255, 255);
+    text-align: center;
+}
+
+.game_info {
+    margin: 5%;
+    width: 90%;
+    height: 20%;
+    font-size: 2vmin;
+    z-index: auto;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+}
+
+.game_new {
+    margin: 0 25%;
+    width: 50%;
+    height: 20%;
+    font-size: 2vmin;
+    z-index: auto;
+    background-color: #fff;
+    color: #18191c;
+    text-align: center;
+}

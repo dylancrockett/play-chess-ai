@@ -1,0 +1,24 @@
+This file contains an explanation of how to use this program and some developer notes.
+
+Usage Steps:
+    1. Install dependencies listed in the requirements.txt file.
+    2. Use python 3.7.x to run the main.py once step 1 is complete.
+    3. Once the program has started enter the following into a
+       browser (preferably Chrome): "localhost:5000"
+    4. Once on the homepage of the site you can choose which AI you
+       would like to play against.
+    5. Play the AI of your choice.
+
+Developer Notes:
+    > The page styles are designed and tested using Chrome
+    > There are technically 5 different AI's implemented (including a random AI)
+    > Currently you cannot play an AI against an AI (desired feature if enough time)
+
+    > This project makes use of the following non-standard libraries:
+        - flask - web app library used to display web pages
+        - flask-socketio.py - a socketio extension for the flask library allowing for easy socket communications
+        - chess.py - used as the server chess engine for validating moves and getting a list of valid moves for the AI
+        - jquery.js - used for web page programming and is a req for chessboard.js
+        - chessboard.js - used for client side chess board visualization and interactions
+        - chess.js - used as a chess engine on the user side to calculate valid moves and prevent invalid ones
+        - socket.io.js - used for the client side socketio communications

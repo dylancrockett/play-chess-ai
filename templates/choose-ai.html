@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Choose a Chess AI</title>
+    <link rel="stylesheet" href="/static/css/desktop_chess.css">
+</head>
+<body>
+    <div style="display: block; align-content: center;">
+        <h1>Choose an AI to Play Against</h1>
+        <hr>
+        <input type="submit" value="Random AI"
+        onclick="window.location='/play-ai/random';" />
+        <p>An AI that makes moves at random.</p>
+        <input type="submit" value="Point AI"
+        onclick="window.location='/play-ai/point';" />
+        <input type="submit" value="Advanced Point AI"
+        onclick="window.location='/play-ai/advanced_point';" />
+        <input type="submit" value="Minimax AI"
+        onclick="window.location='/play-ai/minimax';" />
+        <input type="submit" value="Advanced Minimax AI"
+        onclick="window.location='/play-ai/advanced_minimax';" />
+    </div>
+</body>
+</html>
