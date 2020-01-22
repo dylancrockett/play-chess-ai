@@ -19,6 +19,7 @@ class GameState(enum.Enum):
     NONE = "none"
 
 
+# Working on updating so that an AI can play another AI by having the AI inherit from the player class
 # player class for storing player data in the game manager
 class Player:
     def __init__(self, username="Guest", player_id="guest", color=None):
@@ -39,8 +40,9 @@ class Player:
 
 
 # AI class for storing AI data in the game manager (also stores the AI engine)
-class AI:
+class AI(Player):
     def __init__(self, ai, username="AI", player_id="ai", color=None):
+        super().__init__(username, player_id, color)
         self.ai = ai
         self.username = username
         self.id = player_id

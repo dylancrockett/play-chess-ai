@@ -538,3 +538,52 @@ class AdvancedMiniMaxAI(ChessAI):
 
             # fallback return if no pruning occurs
             return best_score
+
+
+class MonteCarloAI(ChessAI):
+    def __init__(self, color=None):
+        super().__init__(color)
+
+    def get_move(self, fen):
+        self.board.set_fen(fen)
+
+        best_score = 0
+        best_move = None
+        neutral_moves = []
+
+        # find the best of the legal moves
+        for move in self.board.legal_moves:
+            # make the move
+            self.board.push(move)
+
+            # score the move
+            score = self.monte_carlo(10)
+
+            # undo the move
+            self.board.pop()
+
+            # if the score is higher than the current best score then set the best move and best_score
+            if best_score <= score:
+                best_move = move
+                best_score = score
+
+        # if no best move was found then choose from one of the neutral moves
+        if best_score == 0:
+            best_move = self.board.random_move()
+
+        return best_move
+
+    # execute a monte carlo search on the board
+    def monte_carlo(self, games):
+        results = 0
+
+        for x in range(1, games):
+            results += self.play_random_game()
+
+        return results / games
+
+    # plays a random game from a given position and returns the result
+    def play_random_game(self):
+
+
+        return
