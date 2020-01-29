@@ -30,6 +30,14 @@ class Player:
         self.color = color
         return
 
+    # overwritten by AI player type
+    def get_move(self, fen):
+        return None
+
+    # change the Player's color
+    def set_color(self, color):
+        self.color = color
+
     def data(self):
         return {
             "name": self.username,
@@ -84,7 +92,9 @@ class GameManager:
                 else:
                     return False
 
-        def __init__(self, player_data, ai_data, player_color):
+        def __init__(self, player_data, ai_data, player_color, ai_game):
+            self.ai_game = ai_game
+
             # session information
             self.session_url = secrets.token_urlsafe(16)
             self.session_secret = secrets.token_urlsafe(32)
@@ -101,25 +111,42 @@ class GameManager:
 
             # set players color and create the ai
             if player_color == "w":
-                self.player.color = "w"
+                self.player.set_color("w")
                 self.ai.set_color("b")
             elif player_color == "b":
-                self.player.color = "b"
+                self.player.set_color("b")
                 self.ai.set_color("w")
             else:
                 # randomize the colors
                 if bool(random.getrandbits(1)):
-                    self.player.color = "w"
+                    self.player.set_color("w")
                     self.ai.set_color("b")
                 else:
-                    self.player.color = "b"
+                    self.player.set_color("b")
                     self.ai.set_color("w")
             return
 
         # make a move using the ai
         def ai_move(self):
-            # the move the ai wants to make
-            move = self.ai.get_move(self.fen())
+            if self.ai_game:
+                if self.board.turn == chess.WHITE:
+                    print("MAKING WHITE MOVE USING: " + self.player.username)
+                    try:
+                        move = self.player.get_move(self.fen())
+                    except Exception as e:
+                        print(e)
+                else:
+                    print("MAKING WHITE MOVE USING: " + self.ai.username)
+                    move = self.ai.get_move(self.fen())
+            else:
+                # the move the ai wants to make
+                move = self.ai.get_move(self.fen())
+
+            # in the case the move is None
+            if move is None:
+                return None
+
+            print("AI MOVE: " + move.uci())
 
             # make the move
             self.board.push(move)
@@ -252,9 +279,9 @@ class GameManager:
         return False
 
     # creates a new game with some given player data
-    def create_game(self, player_data, ai_data, player_color="r"):
+    def create_game(self, player_data, ai_data, player_color="r", ai_game=False):
         # create a new game
-        new_game = self.Game(player_data, ai_data, player_color)
+        new_game = self.Game(player_data, ai_data, player_color, ai_game)
 
         # add the game to the list
         self.__games.append(new_game)

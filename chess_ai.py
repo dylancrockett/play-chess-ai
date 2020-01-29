@@ -160,7 +160,7 @@ def piece_score(piece_type):
     elif piece_type == chess.QUEEN:
         return 90
     elif piece_type == chess.KING:
-        return 900
+        return 9000
 
 
 # get a score based on a piece type and position and color
@@ -456,11 +456,7 @@ class AdvancedMiniMaxAI(ChessAI):
             # make the move
             self.board.push(move)
 
-            # calculate the score (use a different depth if there are less moves)
-            if num_pieces > 10:
-                score = self.minmax(2, -10000, 10000, False)
-            else:
-                score = self.minmax(3, -10000, 10000, False)
+            score = self.minmax(2, -10000, 10000, False)
 
             # undo the move
             self.board.pop()

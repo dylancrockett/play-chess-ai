@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Play a Chess AI</title>
+    <link rel="stylesheet" href="/static/css/desktop_chess.css">
+    <link rel="stylesheet" href="/static/css/chessboard-1.0.0.min.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/static/js/chess.js"></script>
+    <script type="text/javascript" src="/static/js/chessboard-1.0.0.js"></script>
+</head>
+<body>
+    <div style="display: flex; align-content: center;">
+        <div class="chess-page-grid">
+            <div class="opponent">
+                <img class="avatar">
+                <div class="username"></div>
+            </div>
+            <div class="board">
+                <div id="chess_board" style="width: 100%"></div>
+            </div>
+            <div class="player">
+                <img class="avatar">
+                <div class="username"></div>
+            </div>
+        </div>
+    </div>
+    <div class="game_overlay" id="game_overlay"></div>
+    <div class="announcement_overlay" id="announcement">
+        <p class="game_status" id="status">Starting Game...</p>
+        <hr class="game_divider">
+        <p class="game_info" id="info">Your game will begin shortly!</p>
+        <input class="game_new" type="submit" value="Main Menu"
+        onclick="window.location='/play';" />
+    </div>
+</body>
+<script>
+
+    var game_info = {{data|tojson|safe}};
+    var socket = io();
+    var board = null;
+    var game = new Chess(game_info.current_fen);
+    var whiteSquareGrey = '#a9a9a9';
+    var blackSquareGrey = '#696969';
+    var gameOn = true;
+
+    //remove the pre-game overlay
+    function removeOverlay() {
+        $("#game_overlay").hide(0);
+        $("#announcement").hide(0);
+    }
+
+    //re enable the game overlay
+    function addOverlay(status, info) {
+        $("#game_overlay").show(0);
+
+        $("#status").text(status);
+        $("#info").text(info);
+
+        $("#announcement").show(0);
+    }
+
+    function removeGreySquares () {
+      $('#chess_board .square-55d63').css('background', '')
+    }
+
+    function greySquare (square) {
+      var $square = $('#chess_board .square-' + square);
+
+      var background = whiteSquareGrey;
+      if ($square.hasClass('black-3c85d')) {
+        background = blackSquareGrey;
+      }
+
+      $square.css('background', background);
+    }
+
+
+    //update the board shortcut call
+    function updateBoard() {
+        //update the board based on what is calculated by the chess game engine
+        board.position(game.fen());
+    }
+
+    //whenever the player tries to pick up a piece
+    function onDragStart (source, piece, position, orientation) {
+        return false;
+    }
+
+    // always update the board visually when a move is made so that special cases don't cause weird visual bugs
+    var onSnapEnd = function() {
+        //update board
+        updateBoard();
+    };
+
+    function onMouseoverSquare (square, piece) {
+      // get list of possible moves for this square
+      var moves = game.moves({
+        square: square,
+        verbose: true
+      });
+
+      // exit if there are no moves available for this square
+      if (moves.length === 0) return;
+
+      // highlight the square they moused over
+      greySquare(square);
+
+      // highlight the possible squares for this piece
+      for (var i = 0; i < moves.length; i++) {
+        greySquare(moves[i].to)
+      }
+    }
+    function onMouseoutSquare (square, piece) {
+      removeGreySquares();
+    }
+
+    var config = {
+        position: game_info.current_fen,
+        draggable: true,
+        pieceTheme: '../../static/img/chesspieces/wikipedia/{piece}.png',
+        moveSpeed: 'fast',
+        onDragStart: onDragStart,
+        onSnapEnd: onSnapEnd,
+        onMouseoverSquare: onMouseoverSquare,
+        onMouseoutSquare: onMouseoutSquare
+    };
+
+    function check_state(data) {
+        //if there is a checkmate
+        if (data.state === "checkmate") {
+            gameOn = false;
+
+            if (game.turn() === "b") {
+                addOverlay("Checkmate", "White has won the game!");
+            } else {
+                addOverlay("Checkmate", "Black has won the game!");
+            }
+        }
+        //in the case of a draw
+        else if (data.state === "stalemate" || data.state === "insufficient_material" || data.state === "fivefold" || data.state === "stalemate" || data.state === "fifty_moves" || data.state === "seventyfive_moves") {
+            gameOn = false;
+            var reason = "";
+
+            //give the reason for the draw
+            if (data.state === "stalemate") {
+                reason = "a stalemate";
+            }
+            else if (data.state === "insufficient_material") {
+                reason = "insufficient material"
+            }
+            else if (data.state === "threefold") {
+                reason = "threefold repetition"
+            }
+            else if (data.state === "fivefold") {
+                reason = "fivefold repetition"
+            }
+            else if (data.state === "fifty_moves") {
+                reason = "the fifty move rule"
+            }
+            else if (data.state === "seventyfive_moves") {
+                reason = "the seventyfive move rule"
+            }
+
+            addOverlay("Draw", "The game has been drawn because of " + reason + ".");
+        }
+        else {
+            //do nothing
+        }
+    }
+
+    //create board
+    board = Chessboard('chess_board', config);
+
+    //flip the board if the player is black
+    if(game_info.player.color === "b") {
+        board.flip();
+    }
+
+    function make_ai_move() {
+        if (gameOn) {
+            var data = {
+                session_url: game_info.session_url
+            };
+            setTimeout(function () {
+                socket.emit("ai_move", data);
+            }, 50);
+        }
+    }
+
+    //on connection setup
+    socket.on('connect', function(){});
+
+    //updates the board when the opponent makes a move using a fen
+    socket.on('update_fen', function(data){
+        console.log(data);
+
+        game.load(data.fen);
+        setTimeout(function(){
+            updateBoard();
+        }, 100);
+
+        check_state(data);
+
+        make_ai_move();
+    });
+
+    //updates the board when the opponent makes a move using a move
+    socket.on('give_fen', function(data){
+        console.log(data);
+        if (game.fen() !== data.fen) {
+            game.load(data.fen);
+            setTimeout(function () {
+                console.log("Fen's did not match, updating board...");
+                updateBoard();
+            }, 100);
+        }
+    });
+
+    //onload setup
+    $(window).load(function(){
+        removeOverlay();
+
+        check_state(game_info);
+
+        //fill in names, avatars and ratings of each player
+        $(".opponent > .username").text(game_info.ai.name);
+        $(".opponent > .avatar").attr("src", game_info.ai.avatar_url);
+
+        $(".player > .username").text(game_info.player.name);
+        $(".player > .avatar").attr("src", game_info.player.avatar_url);
+
+        var data = {
+            session_url: game_info.session_url
+        };
+
+        socket.emit("join_game", data);
+
+        make_ai_move();
+
+        setInterval(function() {
+            console.log("Requesting fen from server...");
+            socket.emit('get_fen', data)
+        }, 5000)
+
+
+    });
+
+    //handle screen size changes
+    jQuery(function($){
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+
+      $(window).resize(function() {
+        if(windowWidth !== $(window).width() || windowHeight !== $(window).height()) {
+          location.reload();
+        }
+      });
+    });
+</script>
+</html>

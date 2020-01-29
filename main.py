@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, request
 from flask_socketio import SocketIO, emit, join_room
 import secrets
 import chess_ai
@@ -46,44 +46,33 @@ def play():
     return render_template("choose-ai.html")
 
 
-@app.route('/play-ai/<ai_user_id>')
-def create_ai_game(ai_user_id):
-    ai_player = None
+@app.route('/new/player-vs-ai/<ai_id>')
+def create_player_vs_ai_game(ai_id):
+    ai_player = get_ai_by_name(ai_id)
 
-    if ai_user_id == "random":
-        opponent_ai = gm.AI(
-            chess_ai.RandomAI(),
-            "Random AI",
-        )
-    elif ai_user_id == "point":
-        opponent_ai = gm.AI(
-            chess_ai.PointAI(),
-            "Point AI",
-        )
-    elif ai_user_id == "advanced_point":
-        opponent_ai = gm.AI(
-            chess_ai.AdvancedPointAI(),
-            "Advanced Point AI",
-        )
-    elif ai_user_id == "minimax":
-        opponent_ai = gm.AI(
-            chess_ai.MiniMaxAI(),
-            "Minmax AI",
-        )
-    elif ai_user_id == "advanced_minimax":
-        opponent_ai = gm.AI(
-            chess_ai.AdvancedMiniMaxAI(),
-            "Advanced Minmax AI",
-        )
-    else:
-        return "AI type could not be found."
+    if ai_player is None:
+        return "Invalid AI"
 
     guest_player = gm.Player()
 
     # create a player-vs-ai game
-    session_url, session_secret = manager.create_game(guest_player, opponent_ai)
+    session_url, session_secret = manager.create_game(guest_player, ai_player)
 
     return redirect('/play/player-vs-ai/' + session_url)
+
+
+@app.route('/new/ai-vs-ai')
+def create_ai_vs_ai_game():
+    try:
+        white_ai = get_ai_by_name(request.args["white_ai"])
+        black_ai = get_ai_by_name(request.args["black_ai"])
+    except KeyError:
+        return "Invalid URL"
+
+    # create a ai-vs-ai game
+    session_url, session_secret = manager.create_game(white_ai, black_ai, player_color='w', ai_game=True)
+
+    return redirect('/play/ai-vs-ai/' + session_url)
 
 
 @app.route('/play/player-vs-ai/<game_session>')
@@ -91,7 +80,15 @@ def player_vs_ai(game_session):
     if not manager.check_session(game_session):
         return redirect('/play')
 
-    return render_template("play/ai.html", data=manager.player_data(game_session))
+    return render_template("play/player-ai.html", data=manager.player_data(game_session))
+
+
+@app.route('/play/ai-vs-ai/<game_session>')
+def ai_vs_ai(game_session):
+    if not manager.check_session(game_session):
+        return redirect('/play')
+
+    return render_template("play/ai-ai.html", data=manager.player_data(game_session))
 
 
 @socket_io.on('verify_move')
@@ -142,7 +139,6 @@ def get_fen(data):
 @socket_io.on('ai_move')
 def ai_move(data):
     # make the ai move
-
     pool.submit(threaded_ai_move, data)
     return
 
@@ -156,6 +152,9 @@ def threaded_ai_move(data):
     # make the ai move
     fen, state, move = manager.ai_move(data["session_url"])
 
+    if move is None:
+        return
+
     response = {
         "fen": fen,
         "state": state,
@@ -165,6 +164,38 @@ def threaded_ai_move(data):
     # update the player
     socket_io.emit('update_fen', response, room=data["session_url"])
     return
+
+
+def get_ai_by_name(ai_name):
+    if ai_name == "random":
+        ai = gm.AI(
+            chess_ai.RandomAI(),
+            "Random AI",
+        )
+    elif ai_name == "point":
+        ai = gm.AI(
+            chess_ai.PointAI(),
+            "Point AI",
+        )
+    elif ai_name == "advanced_point":
+        ai = gm.AI(
+            chess_ai.AdvancedPointAI(),
+            "Advanced Point AI",
+        )
+    elif ai_name == "minimax":
+        ai = gm.AI(
+            chess_ai.MiniMaxAI(),
+            "Minmax AI",
+        )
+    elif ai_name == "advanced_minimax":
+        ai = gm.AI(
+            chess_ai.AdvancedMiniMaxAI(),
+            "Advanced Minmax AI",
+        )
+    else:
+        ai = None
+
+    return ai
 
 
 if __name__ == '__main__':
