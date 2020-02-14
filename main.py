@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 import game_manager as gm
 
 """
+    licence
     Once the flask app is launched go to the following url in a web browser to play an AI: 'localhost:5000'
     > The page styles are designed and tested using Chrome 
     > There are technically 5 different AI's implemented (including a random AI)
