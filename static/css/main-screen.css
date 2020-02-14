@@ -1,0 +1,40 @@
+body {
+    margin: 0;
+    background-color: rgb(50, 54, 57);
+}
+
+h1 {
+    color: white;
+}
+
+p {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+a {
+    color: #007bff;
+    text-underline: #007bff;
+}
+
+.wrapper {
+    height: 100vh;
+}
+
+.choice-label {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.center-content {
+    max-width: 512px;
+    margin: auto;
+}
+
+#choice-vs {
+    height: 50%;
+    margin-top: 50%;
+    color: white;
+}
+
+#home-btn {
+    margin-top: 25px;
+}

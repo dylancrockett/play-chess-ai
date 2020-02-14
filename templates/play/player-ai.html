@@ -33,12 +33,12 @@
         <hr class="game_divider">
         <p class="game_info" id="info">Your game will begin shortly!</p>
         <input class="game_new" type="submit" value="Play Another AI"
-        onclick="window.location='/play';" />
+        onclick="window.location='/player-vs-ai';" />
     </div>
 </body>
 <script>
 
-    var game_info = {{data|tojson|safe}};
+    var game_info = {{ data|tojson|safe }};
     var socket = io();
     var board = null;
     var game = new Chess(game_info.current_fen);

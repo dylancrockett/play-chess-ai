@@ -10,7 +10,7 @@ import game_manager as gm
     > The page styles are designed and tested using Chrome 
     > There are technically 5 different AI's implemented (including a random AI)
     > Currently you cannot play an AI against an AI (desired feature if enough time)
-    
+
     > This project makes use of the following non-standard libraries:
         - flask - web app library used to display web pages
         - flask-socketio.py - a socketio extension for the flask library allowing for easy socket communications 
@@ -38,12 +38,17 @@ pool = ThreadPoolExecutor(max_workers=32)
 
 @app.route('/')
 def homepage():
-    return redirect('/play')
+    return render_template("intro-page.html")
 
 
-@app.route('/play')
-def play():
-    return render_template("choose-ai.html")
+@app.route('/player-vs-ai')
+def player_vs_ai():
+    return render_template("choose-player-vs-ai.html")
+
+
+@app.route('/ai-vs-ai')
+def ai_vs_ai():
+    return render_template("choose-ai-vs-ai.html")
 
 
 @app.route('/new/player-vs-ai/<ai_id>')
@@ -76,17 +81,17 @@ def create_ai_vs_ai_game():
 
 
 @app.route('/play/player-vs-ai/<game_session>')
-def player_vs_ai(game_session):
+def play_player_vs_ai(game_session):
     if not manager.check_session(game_session):
-        return redirect('/play')
+        return redirect('')
 
     return render_template("play/player-ai.html", data=manager.player_data(game_session))
 
 
 @app.route('/play/ai-vs-ai/<game_session>')
-def ai_vs_ai(game_session):
+def play_ai_vs_ai(game_session):
     if not manager.check_session(game_session):
-        return redirect('/play')
+        return redirect('/')
 
     return render_template("play/ai-ai.html", data=manager.player_data(game_session))
 
@@ -149,21 +154,25 @@ def on_join(data):
 
 
 def threaded_ai_move(data):
-    # make the ai move
-    fen, state, move = manager.ai_move(data["session_url"])
+    try:
+        # make the ai move
+        fen, state, move = manager.ai_move(data["session_url"])
 
-    if move is None:
+        if move is None:
+            return
+
+        response = {
+            "fen": fen,
+            "state": state,
+            "move": move
+        }
+
+        # update the player
+        socket_io.emit('update_fen', response, room=data["session_url"])
         return
-
-    response = {
-        "fen": fen,
-        "state": state,
-        "move": move
-    }
-
-    # update the player
-    socket_io.emit('update_fen', response, room=data["session_url"])
-    return
+    except Exception as e:
+        print("ERROR: ")
+        print(e)
 
 
 def get_ai_by_name(ai_name):

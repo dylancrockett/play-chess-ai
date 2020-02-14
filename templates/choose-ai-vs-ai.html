@@ -8,27 +8,41 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    <title>Summarize for You</title>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/main-screen.css">
+
+    <title>Choose AI vs AI</title>
 </head>
     <body>
-        <div class="wrapper" style="padding: 5vw; max-width: 1200px; margin: auto;">
-            <div class="text-center">
-                <h1>Summarize for You!</h1>
+        <div class="wrapper text-center">
+            <h1>AI vs AI Selector</h1>
+            <div class="ai-vs-ai-selector center-content row">
+                <div class="col-sm-5 form-group">
+                    <label for="white_ai_choice" class="choice-label">White AI</label>
+                    <select class="form-control" id="white_ai_choice">
+                        <option value="random">Random</option>
+                        <option value="point">Point</option>
+                        <option value="advanced_point">Advanced point</option>
+                        <option value="minimax">Minimax</option>
+                        <option value="advanced_minimax">Advanced Minimax</option>
+                    </select>
+                </div>
+                <div class="selector-vs col-sm-2">
+                    <h2 id="choice-vs">VS</h2>
+                </div>
+                <div class="col-sm-5 form-group">
+                    <label for="black_ai_choice" class="choice-label">Black AI</label>
+                    <select class="form-control" id="black_ai_choice">
+                        <option value="random">Random</option>
+                        <option value="point">Point</option>
+                        <option value="advanced_point">Advanced point</option>
+                        <option value="minimax">Minimax</option>
+                        <option value="advanced_minimax">Advanced Minimax</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="text">Text to Summarize</label>
-                <textarea class="form-control" id="text" rows="10"></textarea>
-                <small id="text-help" class="form-text text-muted">The text you would like to have summarized.</small>
-            </div>
-            <div class="form-group">
-                <label for="lines">Summary Length</label>
-                <input type="number" class="form-control" id="lines" value="5" min="1" max="100" style="width: 100px;">
-                <small id="lines-help" class="form-text text-muted">The length in sentences you want the summarized result to be.</small>
-            </div>
-            <button id="summarize" type="button" class="btn btn-primary" style="width: 50vw; max-width: 300px;">Summarize!</button>
-            <hr>
-            <h3>Summarized Text</h3>
-            <p id="summarized" style="max-width: 600px;"></p>
+            <button id="play" type="button" class="btn btn-secondary">Start AI vs AI Game</button><br>
+            <button id="home-btn" type="button" class="btn btn-secondary">Homepage</button>
         </div>
 
         <!-- SocketIO -->
@@ -42,24 +56,17 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
         <script>
-            var socket = io("/");
-
-            $("#summarize").click(function() {
+            $("#play").click(function() {
                 console.log($("#text").val());
 
-                var data = {
-                    "text": $("#text").val(),
-                    "lines": $("#lines").val()
-                };
+                var white_ai = $("#white_ai_choice").val();
+                var black_ai = $("#black_ai_choice").val();
 
-                console.log(data);
-
-                socket.emit("summarize", data);
+                window.location = "/new/ai-vs-ai?white_ai=" + white_ai + "&black_ai=" + black_ai;
             });
 
-            socket.on("response", function (data) {
-                console.log(data);
-                $("#summarized").html(data);
+            $("#home-btn").click(function () {
+               window.location = "/";
             });
 
 

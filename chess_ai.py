@@ -63,18 +63,31 @@ black_king_modifier = [-3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0,
                        2.0,  2.0,  0.0,  0.0,  0.0,  0.0,  2.0,  2.0,
                        2.0,  3.0,  1.0,  0.0,  0.0,  1.0,  3.0,  2.0]
 
+# end game white pawn modifier array
+end_game_black_pawn_modifier = [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0,
+                       8.0,  8.0,  8.0,  8.0,  8.0,  8.0,  8.0,  8.0,
+                       6.0,  6.0,  6.0,  6.0,  6.0,  6.0,  6.0,  6.0,
+                       4.5,  4.5,  4.5,  4.5,  4.5,  4.5,  4.5,  4.5,
+                       2.0,  2.0,  2.0,  2.0,  2.0,  2.0,  2.0,  2.0,
+                       1.5,  1.5,  1.5,  1.5,  1.5,  1.5,  1.5,  1.5,
+                       0.5,  1.0, 1.0,  -2.0, -2.0,  1.0,  1.0,  0.5,
+                       0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0]
+
 white_pawn_modifier = [ele for ele in reversed(black_pawn_modifier)]
 white_knight_modifier = [ele for ele in reversed(black_knight_modifier)]
 white_bishop_modifier = [ele for ele in reversed(black_bishop_modifier)]
 white_rook_modifier = [ele for ele in reversed(black_rook_modifier)]
 white_queen_modifier = [ele for ele in reversed(black_queen_modifier)]
 white_king_modifier = [ele for ele in reversed(black_king_modifier)]
+end_game_white_pawn_modifier = [ele for ele in reversed(end_game_black_pawn_modifier)]
 
 
 # a custom board for the AI that allows it to get values like all possible moves and the current strength of the board
 class AIBoard(chess.Board):
     def __init__(self, fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"):
         super().__init__(fen=fen)
+
+        self.num_pieces = 0
 
     # get a list of the valid legal moves
     def valid_moves(self):
@@ -120,11 +133,18 @@ class AIBoard(chess.Board):
             if piece is None:
                 continue
 
-            # if the current piece belongs to the side we are scoring then add it as a positive, otherwise a negative
-            if piece.color == side_color:
-                score += advanced_piece_score(piece.piece_type, square, piece.color)
-            if piece.color != side_color:
-                score -= advanced_piece_score(piece.piece_type, square, piece.color)
+            if self.num_pieces > 10:
+                # if the current piece belongs to the side we are scoring then add it as a positive, otherwise a negative
+                if piece.color == side_color:
+                    score += advanced_piece_score(piece.piece_type, square, piece.color)
+                if piece.color != side_color:
+                    score -= advanced_piece_score(piece.piece_type, square, piece.color)
+            else:
+                # if the current piece belongs to the side we are scoring then add it as a positive, otherwise a negative
+                if piece.color == side_color:
+                    score += advanced_end_game_piece_score(piece.piece_type, square, piece.color)
+                if piece.color != side_color:
+                    score -= advanced_end_game_piece_score(piece.piece_type, square, piece.color)
 
         # return the score for that player
         return score
@@ -144,7 +164,7 @@ class AIBoard(chess.Board):
             else:
                 num += 1
 
-        return num
+        self.num_pieces = num
 
 
 # get a score based on a piece type
@@ -188,6 +208,49 @@ def advanced_piece_score(piece_type, position, color):
         if piece_type == chess.PAWN:
             # pawn score at the given position based on the modifier + the value of the piece
             return black_pawn_modifier[position] + 10
+        elif piece_type == chess.KNIGHT:
+            # pawn score at the given position based on the modifier + the value of the piece
+            return black_knight_modifier[position] + 30
+        elif piece_type == chess.BISHOP:
+            # pawn score at the given position based on the modifier + the value of the piece
+            return black_bishop_modifier[position] + 30
+        elif piece_type == chess.ROOK:
+            # pawn score at the given position based on the modifier + the value of the piece
+            return black_rook_modifier[position] + 50
+        elif piece_type == chess.QUEEN:
+            # pawn score at the given position based on the modifier + the value of the piece
+            return black_queen_modifier[position] + 90
+        elif piece_type == chess.KING:
+            # pawn score at the given position based on the modifier + the value of the piece
+            return black_king_modifier[position] + 1000
+
+
+# advanced end game score
+# get a score based on a piece type and position and color
+def advanced_end_game_piece_score(piece_type, position, color):
+    if color == chess.WHITE:
+        if piece_type == chess.PAWN:
+            # pawn score at the given position based on the modifier + the value of the piece
+            return end_game_white_pawn_modifier[position] + 10
+        elif piece_type == chess.KNIGHT:
+            # pawn score at the given position based on the modifier + the value of the piece
+            return white_knight_modifier[position] + 35
+        elif piece_type == chess.BISHOP:
+            # pawn score at the given position based on the modifier + the value of the piece
+            return white_bishop_modifier[position] + 35
+        elif piece_type == chess.ROOK:
+            # pawn score at the given position based on the modifier + the value of the piece
+            return white_rook_modifier[position] + 52.5
+        elif piece_type == chess.QUEEN:
+            # pawn score at the given position based on the modifier + the value of the piece
+            return white_queen_modifier[position] + 100
+        elif piece_type == chess.KING:
+            # pawn score at the given position based on the modifier + the value of the piece
+            return white_king_modifier[position] + 1000
+    elif color == chess.BLACK:
+        if piece_type == chess.PAWN:
+            # pawn score at the given position based on the modifier + the value of the piece
+            return end_game_black_pawn_modifier[position] + 10
         elif piece_type == chess.KNIGHT:
             # pawn score at the given position based on the modifier + the value of the piece
             return black_knight_modifier[position] + 30
@@ -456,6 +519,9 @@ class AdvancedMiniMaxAI(ChessAI):
             # make the move
             self.board.push(move)
 
+            # # count pieces
+            self.board.count_pieces()
+
             score = self.minmax(2, -10000, 10000, False)
 
             # undo the move
@@ -484,6 +550,18 @@ class AdvancedMiniMaxAI(ChessAI):
             score = self.board.calculate_advanced_score(self.color)
 
             return score
+
+        # if the move results in checkmate GO FOR IT
+        if self.board.is_checkmate() and self.board.turn != self.color:
+            return 1000 + self.board.calculate_advanced_score(self.color)
+
+        # if the move results in draw DONT GO FOR IT
+        if self.board.is_stalemate() and self.board.turn != self.color:
+            return -1000 + self.board.calculate_advanced_score(self.color)
+
+        # if the move results in you getting checkmated DONT GO FOR IT
+        if self.board.is_checkmate() and self.board.turn == self.color:
+            return -1000 + self.board.calculate_advanced_score(self.color)
 
         # list of valid moves
         valid_moves = self.board.valid_moves()

@@ -1,10 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/main-screen.css">
+
+    <title>Choose AI vs AI</title>
 </head>
-<body>
-$END$
-</body>
+    <body>
+        <div class="wrapper text-center">
+            <h1>Chess AI Project</h1>
+            <div class="center-content">
+                <p>Welcome to the home page for the chess AI project. This is a project for learning how to develop different
+                types of chess AI using python. From this page you can play against the different AIs as well as have the AIs play
+                games against one another. <br><br>This project was developed by Dylan Crockett with the source code available at
+                <a href="https://github.com/dylancrockett/play-chess-ai">https://github.com/dylancrockett/play-chess-ai</a>
+                under the MIT license. Feel free to play against the AIs
+                for fun or adapt some of the code for another project feel free!</p>
+                <div class="choose-play row">
+                    <div class="col-sm-6 form-group">
+                        <button id="player-vs-ai" type="button" class="btn btn-secondary">Play Against AI</button>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                       <button id="ai-vs-ai" type="button" class="btn btn-secondary">Watch AI vs AI</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SocketIO -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha384-HHKD5G6fqvxz/wBz7BFYeOPzBKELGIZv5l5HAECcXD3zdAS6n8OppmPH9ZxGXY0G" crossorigin="anonymous"></script>
+
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+        <script>
+            $("#player-vs-ai").click(function() {
+                window.location = "/player-vs-ai";
+            });
+
+            $("#ai-vs-ai").click(function() {
+                window.location = "/ai-vs-ai";
+            });
+        </script>
+    </body>
 </html>
